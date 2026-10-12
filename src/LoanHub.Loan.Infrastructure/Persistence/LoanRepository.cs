@@ -10,8 +10,13 @@ namespace LoanHub.Loan.Infrastructure.Persistence;
 public sealed class LoanRepository : ILoanWriteRepository, ILoanReadRepository
 {
     private readonly NpgsqlDataSource _db;
+    private readonly ILoanDbSession _session;
 
-    public LoanRepository(NpgsqlDataSource db) => _db = db;
+    public LoanRepository(NpgsqlDataSource db, ILoanDbSession session)
+    {
+        _db = db;
+        _session = session;
+    }
 
     public async Task AddAsync(LoanAggregate loan, CancellationToken cancellationToken)
     {
@@ -46,8 +51,7 @@ public sealed class LoanRepository : ILoanWriteRepository, ILoanReadRepository
         Func<LoanAggregate, OutboxMessage> createOutbox,
         CancellationToken cancellationToken)
     {
-        await using var conn = await _db.OpenConnectionAsync(cancellationToken);
-        await using var tx = await conn.BeginTransactionAsync(cancellationToken);
+        var (conn, tx) = _session.RequireActiveTransaction();
 
         LoanAggregate loan;
         await using (var select = new NpgsqlCommand(
@@ -89,8 +93,6 @@ public sealed class LoanRepository : ILoanWriteRepository, ILoanReadRepository
             outboxCmd.Parameters.AddWithValue("payload", outbox.PayloadJson);
             await outboxCmd.ExecuteNonQueryAsync(cancellationToken);
         }
-
-        await tx.CommitAsync(cancellationToken);
     }
 
     private static LoanAggregate ReadLoan(NpgsqlDataReader reader)

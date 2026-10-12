@@ -7,26 +7,27 @@ namespace LoanHub.Accounting.Infrastructure.Persistence;
 public sealed class AccountingRepository : IAccountingWriteRepository, IAccountingReadRepository
 {
     private readonly NpgsqlDataSource _db;
+    private readonly IAccountingDbSession _session;
 
-    public AccountingRepository(NpgsqlDataSource db) => _db = db;
+    public AccountingRepository(NpgsqlDataSource db, IAccountingDbSession session)
+    {
+        _db = db;
+        _session = session;
+    }
 
     public async Task PostJournalWithInboxAsync(
         JournalEntry entry,
         string eventType,
         CancellationToken cancellationToken)
     {
-        await using var conn = await _db.OpenConnectionAsync(cancellationToken);
-        await using var tx = await conn.BeginTransactionAsync(cancellationToken);
+        var (conn, tx) = _session.RequireActiveTransaction();
 
         await using (var exists = new NpgsqlCommand(
                          "SELECT EXISTS(SELECT 1 FROM inbox WHERE message_id = @id)", conn, tx))
         {
             exists.Parameters.AddWithValue("id", entry.MessageId);
             if ((bool)(await exists.ExecuteScalarAsync(cancellationToken) ?? false))
-            {
-                await tx.CommitAsync(cancellationToken);
                 return;
-            }
         }
 
         await using (var inbox = new NpgsqlCommand(
@@ -55,8 +56,6 @@ public sealed class AccountingRepository : IAccountingWriteRepository, IAccounti
             journal.Parameters.AddWithValue("currency", entry.Currency);
             await journal.ExecuteNonQueryAsync(cancellationToken);
         }
-
-        await tx.CommitAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<JournalEntryDto>> GetJournalByLoanAsync(

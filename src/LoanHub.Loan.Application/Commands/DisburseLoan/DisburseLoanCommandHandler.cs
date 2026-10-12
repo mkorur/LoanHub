@@ -12,28 +12,44 @@ public sealed class DisburseLoanCommandHandler : IRequestHandler<DisburseLoanCom
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly ILoanWriteRepository _writes;
+    private readonly ILoanUnitOfWork _unitOfWork;
 
-    public DisburseLoanCommandHandler(ILoanWriteRepository writes) => _writes = writes;
+    public DisburseLoanCommandHandler(ILoanWriteRepository writes, ILoanUnitOfWork unitOfWork)
+    {
+        _writes = writes;
+        _unitOfWork = unitOfWork;
+    }
 
     public async Task<DisburseLoanCommandResult> Handle(DisburseLoanCommand request, CancellationToken cancellationToken)
     {
         LoanAggregate? disbursed = null;
 
-        await _writes.DisburseAsync(request.LoanId, loan =>
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            loan.Disburse();
-            disbursed = loan;
+            await _writes.DisburseAsync(request.LoanId, loan =>
+            {
+                loan.Disburse();
+                disbursed = loan;
 
-            var integrationEvent = LoanCreatedEvent.Create(
-                loan.Id, loan.CustomerId, loan.AmountCents, loan.Currency);
+                var integrationEvent = LoanCreatedEvent.Create(
+                    loan.Id, loan.CustomerId, loan.AmountCents, loan.Currency);
 
-            return new OutboxMessage(
-                integrationEvent.EventId,
-                "loan",
-                loan.Id,
-                integrationEvent.EventType,
-                JsonSerializer.Serialize(integrationEvent, JsonOptions));
-        }, cancellationToken);
+                return new OutboxMessage(
+                    integrationEvent.EventId,
+                    "loan",
+                    loan.Id,
+                    integrationEvent.EventType,
+                    JsonSerializer.Serialize(integrationEvent, JsonOptions));
+            }, cancellationToken);
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync(cancellationToken);
+            throw;
+        }
 
         return new DisburseLoanCommandResult(
             LoanMapper.ToDto(disbursed!),
