@@ -1,0 +1,67 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Events", "src\LoanHub.Events\LoanHub.Events.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Loan.Domain", "src\LoanHub.Loan.Domain\LoanHub.Loan.Domain.csproj", "{D1D1D1D1-1111-1111-1111-111111111101}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Loan.Application", "src\LoanHub.Loan.Application\LoanHub.Loan.Application.csproj", "{D1D1D1D1-1111-1111-1111-111111111102}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Loan.Infrastructure", "src\LoanHub.Loan.Infrastructure\LoanHub.Loan.Infrastructure.csproj", "{D1D1D1D1-1111-1111-1111-111111111103}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Loan.Api", "src\LoanHub.Loan.Api\LoanHub.Loan.Api.csproj", "{D1D1D1D1-1111-1111-1111-111111111104}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Accounting.Domain", "src\LoanHub.Accounting.Domain\LoanHub.Accounting.Domain.csproj", "{E2E2E2E2-2222-2222-2222-222222222201}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Accounting.Application", "src\LoanHub.Accounting.Application\LoanHub.Accounting.Application.csproj", "{E2E2E2E2-2222-2222-2222-222222222202}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Accounting.Infrastructure", "src\LoanHub.Accounting.Infrastructure\LoanHub.Accounting.Infrastructure.csproj", "{E2E2E2E2-2222-2222-2222-222222222203}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanHub.Accounting.Api", "src\LoanHub.Accounting.Api\LoanHub.Accounting.Api.csproj", "{E2E2E2E2-2222-2222-2222-222222222204}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111101}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111102}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111103}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D1D1D1-1111-1111-1111-111111111104}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222201}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222201}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222203}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222203}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222203}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2E2E2E2-2222-2222-2222-222222222204}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

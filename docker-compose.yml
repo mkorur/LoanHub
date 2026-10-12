@@ -1,0 +1,103 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: loanhub
+      POSTGRES_PASSWORD: loanhub
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init-databases.sql:/docker-entrypoint-initdb.d/01-init-databases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loanhub"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  redpanda:
+    image: redpandadata/redpanda:v24.2.4
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 512M
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+    ports:
+      - "19092:19092"
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "health"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  redpanda-init:
+    image: redpandadata/redpanda:v24.2.4
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        rpk topic create loan.events -p 3 -r 1 --brokers redpanda:9092 || true
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - redpanda
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: redpanda:9092
+
+  loan-service:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: src/LoanHub.Loan.Api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_URLS: http://+:8081
+      ConnectionStrings__Default: Host=postgres;Port=5432;Database=loan_db;Username=loanhub;Password=loanhub
+      Kafka__BootstrapServers: redpanda:9092
+      Kafka__Topic: loan.events
+    ports:
+      - "8081:8081"
+
+  accounting-service:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: src/LoanHub.Accounting.Api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_URLS: http://+:8082
+      ConnectionStrings__Default: Host=postgres;Port=5432;Database=accounting_db;Username=loanhub;Password=loanhub
+      Kafka__BootstrapServers: redpanda:9092
+      Kafka__Topic: loan.events
+      Kafka__GroupId: accounting-service
+    ports:
+      - "8082:8082"
+
+volumes:
+  postgres_data:
