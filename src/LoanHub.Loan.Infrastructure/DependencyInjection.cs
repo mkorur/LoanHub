@@ -19,6 +19,10 @@ public static class DependencyInjection
             ?? "Host=localhost;Port=5432;Database=loan_db;Username=loanhub;Password=loanhub";
 
         services.AddSingleton(_ => NpgsqlDataSource.Create(connectionString));
+        services.AddScoped<LoanUnitOfWork>();
+        services.AddScoped<ILoanUnitOfWork>(sp => sp.GetRequiredService<LoanUnitOfWork>());
+        services.AddScoped<ILoanDbSession>(sp => sp.GetRequiredService<LoanUnitOfWork>());
+
         services.AddScoped<LoanRepository>();
         services.AddScoped<ILoanWriteRepository>(sp => sp.GetRequiredService<LoanRepository>());
         services.AddScoped<ILoanReadRepository>(sp => sp.GetRequiredService<LoanRepository>());

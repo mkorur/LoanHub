@@ -39,6 +39,10 @@ Servisler HTTP ile birbirini çağırmaz; yalnızca Kafka üzerinden konuşur (*
 
 API ve Kafka consumer `IMediator.Send(...)` kullanır. Yazma/okuma portları ayrı: `ILoanWriteRepository` / `ILoanReadRepository`, `IAccountingWriteRepository` / `IAccountingReadRepository` (aynı PostgreSQL; ileride read model ayrılabilir).
 
+## Unit of Work
+
+`ILoanUnitOfWork` / `IAccountingUnitOfWork` (Application) — handler veya outbox relay: `BeginTransaction` → repository → `Commit` / `Rollback`. `LoanUnitOfWork` (Infrastructure) paylaşılan Npgsql transaction; repository commit etmez.
+
 ## Clean Architecture
 
 Bağımlılıklar içe doğru: **Api → Infrastructure → Application → Domain**

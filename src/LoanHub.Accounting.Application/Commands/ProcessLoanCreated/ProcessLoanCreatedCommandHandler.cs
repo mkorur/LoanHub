@@ -8,8 +8,15 @@ namespace LoanHub.Accounting.Application.Commands.ProcessLoanCreated;
 public sealed class ProcessLoanCreatedCommandHandler : IRequestHandler<ProcessLoanCreatedCommand>
 {
     private readonly IAccountingWriteRepository _writes;
+    private readonly IAccountingUnitOfWork _unitOfWork;
 
-    public ProcessLoanCreatedCommandHandler(IAccountingWriteRepository writes) => _writes = writes;
+    public ProcessLoanCreatedCommandHandler(
+        IAccountingWriteRepository writes,
+        IAccountingUnitOfWork unitOfWork)
+    {
+        _writes = writes;
+        _unitOfWork = unitOfWork;
+    }
 
     public async Task Handle(ProcessLoanCreatedCommand request, CancellationToken cancellationToken)
     {
@@ -24,6 +31,16 @@ public sealed class ProcessLoanCreatedCommandHandler : IRequestHandler<ProcessLo
             integrationEvent.AmountCents,
             integrationEvent.Currency);
 
-        await _writes.PostJournalWithInboxAsync(entry, integrationEvent.EventType, cancellationToken);
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _writes.PostJournalWithInboxAsync(entry, integrationEvent.EventType, cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }
